@@ -1,0 +1,18 @@
+[package]
+name = "myproject"
+version = "0.1.0"
+edition = "2021"
+
+
+# uncomment the following lines to compile the python docstring parser
+
+# [[bin]]
+# name = "pyparse"
+# path = "src/pyparse.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chatgpt_rs = "1.2.3"
+serenity = "0.11"
+tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
