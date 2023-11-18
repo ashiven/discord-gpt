@@ -2,7 +2,7 @@ use std::fs;
 use std::io::prelude::*;
 use std::io::{BufReader, Result};
 
-const FILE_PATH: &str = "C:/Users/janni/OneDrive/Dokumente/Projects/Rust/myproject/test.py";
+const FILE_PATH: &str = "C:/Users/janni/OneDrive/Dokumente/Projects/Python/scripts/test.py";
 
 #[derive(Debug)]
 struct Docstrings {

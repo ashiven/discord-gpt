@@ -24,13 +24,8 @@ async fn chat(ctx: &Context, msg: &Message) -> CommandResult {
 
 #[command]
 async fn summarize(ctx: &Context, msg: &Message) -> CommandResult {
-    let response;
-
-    if let Some(replied_to) = &msg.referenced_message {
-        response = handle_summarize_message(replied_to).await?;
-    } else {
-        response = handle_summarize_text(msg).await?;
-    }
+    let summarize_handler = SummarizeHandler::new();
+    let response = summarize_handler.handle(msg).await?;
 
     msg.reply(ctx, response).await?;
 
