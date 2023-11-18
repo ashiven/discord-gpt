@@ -1,19 +1,22 @@
 use std::env;
 
+use dotenv::dotenv;
 use serenity::async_trait;
 use serenity::framework::standard::macros::{command, group};
 use serenity::framework::standard::{CommandResult, StandardFramework};
 use serenity::model::channel::Message;
 use serenity::prelude::*;
 
-// import the chat module
 mod chat;
+mod handlers;
 
-// bring the message_chatgpt function into scope
-use chat::message_chatgpt;
+use handlers::*;
 
 #[command]
-async fn geh(ctx: &Context, msg: &Message) -> CommandResult {
+async fn chat(ctx: &Context, msg: &Message) -> CommandResult {
+    // TODO: - here we want to give the user the option to have a conversation
+    //       - the conversation should maintain context between messages and be user-specific
+
     msg.reply(ctx, "Who say's I'm geh?").await?;
 
     Ok(())
@@ -21,31 +24,21 @@ async fn geh(ctx: &Context, msg: &Message) -> CommandResult {
 
 #[command]
 async fn summarize(ctx: &Context, msg: &Message) -> CommandResult {
-    const PROMPT: &str =
-        "Please summarize the following text in as much detail as possible.\n\nText: \n";
+    let response;
 
-    // extract the content from the message
-    let query = msg.content.clone();
+    if let Some(replied_to) = &msg.referenced_message {
+        response = handle_summarize_message(replied_to).await?;
+    } else {
+        response = handle_summarize_text(msg).await?;
+    }
 
-    // delete the first line of the message
-    let query = query.lines().skip(1).collect::<Vec<_>>().join("\n");
-
-    // prepend the prompt to the query
-    let query = format!("{}{}", PROMPT, query);
-
-    println!("Query: \n\n{}", query);
-
-    let chatgpt_response = message_chatgpt(&query).await?;
-
-    println!("\nChatGPT Response: \n\n{}", chatgpt_response);
-
-    msg.reply(ctx, chatgpt_response).await?;
+    msg.reply(ctx, response).await?;
 
     Ok(())
 }
 
 #[group]
-#[commands(geh, summarize)]
+#[commands(chat, summarize)]
 struct General;
 
 struct Handler;
@@ -55,6 +48,9 @@ impl EventHandler for Handler {}
 
 #[tokio::main]
 async fn main() {
+    // Load the .env file
+    dotenv().ok();
+
     // Get the discord bot token from the environment
     let token = env::var("DISCORD_TOKEN").expect("token");
 
