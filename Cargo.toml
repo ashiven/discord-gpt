@@ -15,5 +15,8 @@ edition = "2021"
 [dependencies]
 chatgpt_rs = "1.2.3"
 dotenv = "0.15.0"
+reqwest = "0.11.22"
+scraper = "0.18.1"
 serenity = "0.11"
 tokio = { version = "1.21.2", features = ["macros", "rt-multi-thread"] }
+url = "2.4.1"

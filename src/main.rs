@@ -13,6 +13,13 @@ mod handlers;
 use handlers::*;
 
 #[command]
+async fn rate(ctx: &Context, msg: &Message) -> CommandResult {
+    msg.reply(ctx, "I rate 9 out of 10.").await?;
+
+    Ok(())
+}
+
+#[command]
 async fn chat(ctx: &Context, msg: &Message) -> CommandResult {
     // TODO: - here we want to give the user the option to have a conversation
     //       - the conversation should maintain context between messages and be user-specific
@@ -33,7 +40,7 @@ async fn summarize(ctx: &Context, msg: &Message) -> CommandResult {
 }
 
 #[group]
-#[commands(chat, summarize)]
+#[commands(rate, chat, summarize)]
 struct General;
 
 struct Handler;
