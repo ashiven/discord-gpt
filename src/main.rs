@@ -16,9 +16,19 @@ use handlers::*;
 static mut CHAT_HANDLER: ChatHandler = ChatHandler { context: None };
 static mut SUMMARIZE_HANDLER: SummarizeHandler = SummarizeHandler {};
 
+// TODO: - implement
 #[command]
 async fn rate(ctx: &Context, msg: &Message) -> CommandResult {
     msg.reply(ctx, "I rate 9 out of 10.").await?;
+
+    Ok(())
+}
+
+// TODO: - implement
+#[command]
+async fn document(ctx: &Context, msg: &Message) -> CommandResult {
+    msg.reply(ctx, "I just documented your code. Yes I did.")
+        .await?;
 
     Ok(())
 }
@@ -42,7 +52,7 @@ async fn summarize(ctx: &Context, msg: &Message) -> CommandResult {
 }
 
 #[group]
-#[commands(rate, chat, summarize)]
+#[commands(rate, document, chat, summarize)]
 struct General;
 
 struct Handler;
