@@ -12,6 +12,9 @@ mod handlers;
 
 use handlers::*;
 
+static mut CHAT_HANDLER: ChatHandler = ChatHandler { context: None };
+static mut SUMMARIZE_HANDLER: SummarizeHandler = SummarizeHandler {};
+
 #[command]
 async fn rate(ctx: &Context, msg: &Message) -> CommandResult {
     msg.reply(ctx, "I rate 9 out of 10.").await?;
@@ -21,10 +24,7 @@ async fn rate(ctx: &Context, msg: &Message) -> CommandResult {
 
 #[command]
 async fn chat(ctx: &Context, msg: &Message) -> CommandResult {
-    // TODO: - here we want to give the user the option to have a conversation
-    //       - the conversation should maintain context between messages and be user-specific
-    let mut chat_handler = ChatHandler::new();
-    let response = chat_handler.handle(msg).await?;
+    let response = unsafe { CHAT_HANDLER.handle(msg).await? };
 
     msg.reply(ctx, response).await?;
 
@@ -52,6 +52,12 @@ impl EventHandler for Handler {}
 
 #[tokio::main]
 async fn main() {
+    // Initialize the handlers
+    unsafe {
+        CHAT_HANDLER = ChatHandler::new();
+        SUMMARIZE_HANDLER = SummarizeHandler::new();
+    }
+
     // Load the .env file
     dotenv().ok();
 

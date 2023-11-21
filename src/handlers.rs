@@ -99,13 +99,13 @@ impl SummarizeHandler {
 
 pub struct ChatHandler {
     /// a hashmap to store the conversation context for each user (keyed by user id)
-    context: HashMap<u64, Conversation>,
+    pub context: Option<HashMap<u64, Conversation>>,
 }
 
 impl ChatHandler {
     pub fn new() -> Self {
         ChatHandler {
-            context: HashMap::new(),
+            context: Some(HashMap::new()),
         }
     }
 
@@ -116,14 +116,26 @@ impl ChatHandler {
         // extract the user id of the person who sent the message
         let user_id = msg.author.id.0;
 
-        // check if the user has a conversation context, if not, create one and store it
-        let conversation = self
-            .context
-            .entry(user_id)
-            .or_insert_with(|| new_conversation());
+        // get the context hashmap
+        let context = self.context.as_mut().ok_or("Couldn't get context")?;
+
+        // check if the user has an entry in the context hashmap if not, create one and store it
+        let conversation = match context.get_mut(&user_id) {
+            Some(conversation) => {
+                println!("Conversation found for user {}", user_id);
+                conversation
+            }
+            None => {
+                println!("Conversation not found for user {}", user_id);
+                let conversation = new_conversation();
+                context.insert(user_id, conversation);
+                context
+                    .get_mut(&user_id)
+                    .ok_or("Couldn't get conversation")?
+            }
+        };
 
         let response = conversation.send_message(&content).await?;
-
         let response = response.message().content.clone();
 
         Ok(response)
