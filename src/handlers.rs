@@ -1,4 +1,7 @@
-use crate::chat::message_chatgpt;
+use std::collections::HashMap;
+
+use crate::chat::{message_chatgpt, new_conversation};
+use chatgpt::converse::Conversation;
 use serenity::framework::standard::CommandResult;
 use serenity::model::channel::Message;
 use url::Url;
@@ -91,5 +94,38 @@ impl SummarizeHandler {
         println!("\nChatGPT Response: \n\n{}", chatgpt_response);
 
         Ok(chatgpt_response)
+    }
+}
+
+pub struct ChatHandler {
+    /// a hashmap to store the conversation context for each user (keyed by user id)
+    context: HashMap<u64, Conversation>,
+}
+
+impl ChatHandler {
+    pub fn new() -> Self {
+        ChatHandler {
+            context: HashMap::new(),
+        }
+    }
+
+    pub async fn handle(&mut self, msg: &Message) -> CommandResult<String> {
+        let mut content = msg.content.clone();
+        content = content.lines().skip(1).collect::<Vec<_>>().join("\n");
+
+        // extract the user id of the person who sent the message
+        let user_id = msg.author.id.0;
+
+        // check if the user has a conversation context, if not, create one and store it
+        let conversation = self
+            .context
+            .entry(user_id)
+            .or_insert_with(|| new_conversation());
+
+        let response = conversation.send_message(&content).await?;
+
+        let response = response.message().content.clone();
+
+        Ok(response)
     }
 }

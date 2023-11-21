@@ -23,8 +23,10 @@ async fn rate(ctx: &Context, msg: &Message) -> CommandResult {
 async fn chat(ctx: &Context, msg: &Message) -> CommandResult {
     // TODO: - here we want to give the user the option to have a conversation
     //       - the conversation should maintain context between messages and be user-specific
+    let mut chat_handler = ChatHandler::new();
+    let response = chat_handler.handle(msg).await?;
 
-    msg.reply(ctx, "Who say's I'm geh?").await?;
+    msg.reply(ctx, response).await?;
 
     Ok(())
 }
