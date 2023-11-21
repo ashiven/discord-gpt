@@ -110,6 +110,7 @@ impl ChatHandler {
     }
 
     pub async fn handle(&mut self, msg: &Message) -> CommandResult<String> {
+        // skip the first line (the command)
         let mut content = msg.content.clone();
         content = content.lines().skip(1).collect::<Vec<_>>().join("\n");
 
@@ -135,6 +136,7 @@ impl ChatHandler {
             }
         };
 
+        // send the message to chatgpt and get the response
         let response = conversation.send_message(&content).await?;
         let response = response.message().content.clone();
 

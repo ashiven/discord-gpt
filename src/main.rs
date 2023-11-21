@@ -12,6 +12,7 @@ mod handlers;
 
 use handlers::*;
 
+// global variables for the handlers that will be initialized in main
 static mut CHAT_HANDLER: ChatHandler = ChatHandler { context: None };
 static mut SUMMARIZE_HANDLER: SummarizeHandler = SummarizeHandler {};
 
@@ -33,8 +34,7 @@ async fn chat(ctx: &Context, msg: &Message) -> CommandResult {
 
 #[command]
 async fn summarize(ctx: &Context, msg: &Message) -> CommandResult {
-    let summarize_handler = SummarizeHandler::new();
-    let response = summarize_handler.handle(msg).await?;
+    let response = unsafe { SUMMARIZE_HANDLER.handle(msg).await? };
 
     msg.reply(ctx, response).await?;
 
