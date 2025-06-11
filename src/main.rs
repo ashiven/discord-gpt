@@ -35,7 +35,6 @@ async fn document(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 async fn chat(ctx: &Context, msg: &Message) -> CommandResult {
     let response = unsafe { CHAT_HANDLER.handle(msg).await? };
-
     msg.reply(ctx, response).await?;
 
     Ok(())
@@ -44,7 +43,6 @@ async fn chat(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 async fn summarize(ctx: &Context, msg: &Message) -> CommandResult {
     let response = unsafe { SUMMARIZE_HANDLER.handle(msg).await? };
-
     msg.reply(ctx, response).await?;
 
     Ok(())
