@@ -90,14 +90,11 @@ impl ChatHandler {
         let user_id = msg.author.id.0;
         let context = self.context.as_mut().ok_or("Couldn't get context")?;
 
-        // check if the user has an entry in the context hashmap if not, create one and store it
         let conversation = match context.get_mut(&user_id) {
             Some(conversation) => {
-                println!("Conversation found for user {}", user_id);
                 conversation
             }
             None => {
-                println!("Conversation not found for user {}", user_id);
                 let conversation = new_conversation();
                 context.insert(user_id, conversation);
                 context
