@@ -20,14 +20,12 @@ impl SummarizeHandler {
 
         // this is the response we will send back to the user
         let response;
-
         match &msg.referenced_message {
             Some(replied_to) => {
                 response = Self::reply(replied_to).await?;
             }
             None => {
                 let first_line = content.lines().find(|line| !line.is_empty()).ok_or("")?;
-
                 if Url::parse(first_line).is_ok() {
                     response = Self::link(first_line).await?;
                 } else {
@@ -35,7 +33,6 @@ impl SummarizeHandler {
                 }
             }
         }
-
         Ok(response)
     }
 
@@ -44,11 +41,8 @@ impl SummarizeHandler {
             \n\nText: \n";
 
         let query = format!("{}{}", PROMPT, content);
-
         println!("Query: \n\n{}", query);
-
         let chatgpt_response = message_chatgpt(&query).await?;
-
         println!("\nChatGPT Response: \n\n{}", chatgpt_response);
 
         Ok(chatgpt_response)
@@ -60,13 +54,9 @@ impl SummarizeHandler {
         \n\nText: \n";
 
         let content = replied_to.content.clone();
-
         let query = format!("{}{}", PROMPT, content);
-
         println!("Query: \n\n{}", query);
-
         let chatgpt_response = message_chatgpt(&query).await?;
-
         println!("\nChatGPT Response: \n\n{}", chatgpt_response);
 
         Ok(chatgpt_response)
@@ -78,19 +68,13 @@ impl SummarizeHandler {
         \n\nContent: \n";
 
         println!("URL: \n\n{}", url);
-
         let content = reqwest::get(url).await?.text().await?;
         // TODO: - do some stuff to get rid of html tags and only get the text
-
         // limit the content to 4096 characters
         let content = content.chars().take(4096).collect::<String>();
-
         let query = format!("{}{}", PROMPT, content);
-
         println!("Query: \n\n{}", query);
-
         let chatgpt_response = message_chatgpt(&query).await?;
-
         println!("\nChatGPT Response: \n\n{}", chatgpt_response);
 
         Ok(chatgpt_response)
@@ -110,14 +94,9 @@ impl ChatHandler {
     }
 
     pub async fn handle(&mut self, msg: &Message) -> CommandResult<String> {
-        // skip the first line (the command)
         let mut content = msg.content.clone();
         content = content.lines().skip(1).collect::<Vec<_>>().join("\n");
-
-        // extract the user id of the person who sent the message
         let user_id = msg.author.id.0;
-
-        // get the context hashmap
         let context = self.context.as_mut().ok_or("Couldn't get context")?;
 
         // check if the user has an entry in the context hashmap if not, create one and store it
