@@ -18,7 +18,6 @@ impl SummarizeHandler {
         let mut content = msg.content.clone();
         content = content.lines().skip(1).collect::<Vec<_>>().join("\n");
 
-        // this is the response we will send back to the user
         let response;
         match &msg.referenced_message {
             Some(replied_to) => {
@@ -41,9 +40,7 @@ impl SummarizeHandler {
             \n\nText: \n";
 
         let query = format!("{}{}", PROMPT, content);
-        println!("Query: \n\n{}", query);
         let chatgpt_response = message_chatgpt(&query).await?;
-        println!("\nChatGPT Response: \n\n{}", chatgpt_response);
 
         Ok(chatgpt_response)
     }
@@ -55,9 +52,7 @@ impl SummarizeHandler {
 
         let content = replied_to.content.clone();
         let query = format!("{}{}", PROMPT, content);
-        println!("Query: \n\n{}", query);
         let chatgpt_response = message_chatgpt(&query).await?;
-        println!("\nChatGPT Response: \n\n{}", chatgpt_response);
 
         Ok(chatgpt_response)
     }
@@ -67,22 +62,18 @@ impl SummarizeHandler {
         Please summarize them in as much detail as possible. \
         \n\nContent: \n";
 
-        println!("URL: \n\n{}", url);
         let content = reqwest::get(url).await?.text().await?;
         // TODO: - do some stuff to get rid of html tags and only get the text
-        // limit the content to 4096 characters
         let content = content.chars().take(4096).collect::<String>();
         let query = format!("{}{}", PROMPT, content);
-        println!("Query: \n\n{}", query);
         let chatgpt_response = message_chatgpt(&query).await?;
-        println!("\nChatGPT Response: \n\n{}", chatgpt_response);
 
         Ok(chatgpt_response)
     }
 }
 
 pub struct ChatHandler {
-    /// a hashmap to store the conversation context for each user (keyed by user id)
+    // a hashmap to store the conversation context for each user (keyed by user id)
     pub context: Option<HashMap<u64, Conversation>>,
 }
 
@@ -115,7 +106,6 @@ impl ChatHandler {
             }
         };
 
-        // send the message to chatgpt and get the response
         let response = conversation.send_message(&content).await?;
         let response = response.message().content.clone();
 
