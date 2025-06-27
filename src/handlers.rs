@@ -91,9 +91,7 @@ impl ChatHandler {
         let context = self.context.as_mut().ok_or("Couldn't get context")?;
 
         let conversation = match context.get_mut(&user_id) {
-            Some(conversation) => {
-                conversation
-            }
+            Some(conversation) => conversation,
             None => {
                 let conversation = new_conversation();
                 context.insert(user_id, conversation);
