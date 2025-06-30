@@ -53,11 +53,11 @@ This is a discord bot that was written with [poise](https://github.com/serenity-
 -  `!chat` to have a regular conversation with the bot that maintains its context.
 
    ```
-   User: !chat My favorite color is blue
+   User: /chat My favorite color is blue
 
    Bot: That is very interesting!
 
-   User: !chat What is my favorite color?
+   User: /chat What is my favorite color?
 
    Bot: Your favorite color is blue.
    ```
@@ -65,7 +65,7 @@ This is a discord bot that was written with [poise](https://github.com/serenity-
 -  `!summarize` to get a brief summary of your message or the message that you are responding to.
 
    ```
-   User: !summarize *Long and complicated text*
+   User: /summarize *Long and complicated text*
 
    Bot: The key points of the text are the following: ...
    ```
