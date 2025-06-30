@@ -1,3 +1,4 @@
+use dotenv::dotenv;
 use poise::serenity_prelude as serenity;
 
 mod chat;
@@ -32,14 +33,15 @@ async fn summarize(ctx: Context<'_>, msg: serenity::Message) -> Result<(), Error
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
+    let discord_token = std::env::var("DISCORD_TOKEN").expect("missing discord token");
+
     unsafe {
         CHAT_HANDLER = ChatHandler::new();
         SUMMARIZE_HANDLER = SummarizeHandler::new();
     }
 
-    let token = std::env::var("DISCORD_TOKEN").expect("missing discord token");
     let intents = serenity::GatewayIntents::non_privileged();
-
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands: vec![chat(), summarize()],
@@ -52,8 +54,7 @@ async fn main() {
             })
         })
         .build();
-
-    let client = serenity::ClientBuilder::new(token, intents)
+    let client = serenity::ClientBuilder::new(discord_token, intents)
         .framework(framework)
         .await;
     client.unwrap().start().await.unwrap();

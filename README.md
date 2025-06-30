@@ -23,20 +23,21 @@ This is a discord bot that was written with [poise](https://docs.rs/poise/latest
 ### Setup
 
 1. Clone the repository to your local machine as follows:
+
    ```bash
    git clone https://github.com/ashiven/discord-gpt.git
    ```
-   
+
 2. Navigate to the **discord-gpt** directory.
 
    ```bash
    cd ./discord-gpt
    ```
 
-3. Set the **Discord** bot token and **OpenAI** API key environment variables or add them to a `.env` file
+3. Set the **OpenAI** API key and **Discord** bot token environment variables or add them to a `.env` file
 
    ```bash
-   export OPENAI_API_KEY="your api key" DISCORD_TOKEN="your discord token" 
+   export OPENAI_API_KEY="your api key" DISCORD_TOKEN="your discord token"
    ```
 
 ### Usage
