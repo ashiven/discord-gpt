@@ -16,7 +16,7 @@ This is a discord bot that was written with [poise](https://github.com/serenity-
 
 ### Prerequisites
 
--  Download and install the latest version of [Rust](https://www.python.org/downloads/).
+-  Download and install the latest version of [Rust](https://www.rust-lang.org/tools/install).
 -  Register for an [OpenAI](https://platform.openai.com/api-keys) API key and retrieve it.
 -  Create a new [Discord bot](https://www.writebots.com/discord-bot-token/) and retrieve a token for it.
 
