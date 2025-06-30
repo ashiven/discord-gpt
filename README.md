@@ -34,7 +34,7 @@ This is a discord bot that was written with [poise](https://github.com/serenity-
    cd ./discord-gpt
    ```
 
-3. Set the **OpenAI** API key and **Discord** bot token environment variables or add them to a `.env` file
+3. Set the **OpenAI** API key and **Discord** bot token environment variables or add them to a `.env` file.
 
    ```bash
    export OPENAI_API_KEY="your api key" DISCORD_TOKEN="your discord token"
@@ -62,7 +62,7 @@ This is a discord bot that was written with [poise](https://github.com/serenity-
    Bot: Your favorite color is blue.
    ```
 
--  `!summarize` to get a brief summary of your message or the message that you are responding to
+-  `!summarize` to get a brief summary of your message or the message that you are responding to.
 
    ```
    User: !summarize *Long and complicated text*
