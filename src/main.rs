@@ -9,7 +9,9 @@ struct Data {}
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
 
-static mut CHAT_HANDLER: ChatHandler = ChatHandler { context: None };
+static mut CHAT_HANDLER: ChatHandler = ChatHandler {
+    conversations: None,
+};
 static mut SUMMARIZE_HANDLER: SummarizeHandler = SummarizeHandler {};
 
 #[poise::command(slash_command, prefix_command)]
