@@ -1,61 +1,32 @@
-use std::env;
-
-use dotenv::dotenv;
-use serenity::async_trait;
-use serenity::framework::standard::macros::{command, group};
-use serenity::framework::standard::{CommandResult, StandardFramework};
-use serenity::model::channel::Message;
-use serenity::prelude::*;
+use poise::serenity_prelude as serenity;
 
 mod chat;
 mod handlers;
 
 use handlers::*;
 
+struct Data {}
+type Error = Box<dyn std::error::Error + Send + Sync>;
+type Context<'a> = poise::Context<'a, Data, Error>;
+
 static mut CHAT_HANDLER: ChatHandler = ChatHandler { context: None };
 static mut SUMMARIZE_HANDLER: SummarizeHandler = SummarizeHandler {};
 
-// TODO: - implement
-#[command]
-async fn rate(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.reply(ctx, "I rate 9 out of 10.").await?;
-
-    Ok(())
-}
-
-// TODO: - implement
-#[command]
-async fn document(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.reply(ctx, "I just documented your code. Yes I did.")
-        .await?;
-
-    Ok(())
-}
-
-#[command]
-async fn chat(ctx: &Context, msg: &Message) -> CommandResult {
-    let response = unsafe { CHAT_HANDLER.handle(msg).await? };
+#[poise::command(slash_command, prefix_command)]
+async fn chat(ctx: Context<'_>, msg: serenity::Message) -> Result<(), Error> {
+    let response = unsafe { CHAT_HANDLER.handle(msg.clone()).await? };
     msg.reply(ctx, response).await?;
 
     Ok(())
 }
 
-#[command]
-async fn summarize(ctx: &Context, msg: &Message) -> CommandResult {
-    let response = unsafe { SUMMARIZE_HANDLER.handle(msg).await? };
+#[poise::command(slash_command, prefix_command)]
+async fn summarize(ctx: Context<'_>, msg: serenity::Message) -> Result<(), Error> {
+    let response = unsafe { SUMMARIZE_HANDLER.handle(msg.clone()).await? };
     msg.reply(ctx, response).await?;
 
     Ok(())
 }
-
-#[group]
-#[commands(rate, document, chat, summarize)]
-struct General;
-
-struct Handler;
-
-#[async_trait]
-impl EventHandler for Handler {}
 
 #[tokio::main]
 async fn main() {
@@ -64,22 +35,24 @@ async fn main() {
         SUMMARIZE_HANDLER = SummarizeHandler::new();
     }
 
-    dotenv().ok();
-    let token = env::var("DISCORD_TOKEN").expect("token");
+    let token = std::env::var("DISCORD_TOKEN").expect("missing discord token");
+    let intents = serenity::GatewayIntents::non_privileged();
 
-    let framework = StandardFramework::new()
-        .configure(|c| c.prefix("!"))
-        .group(&GENERAL_GROUP);
+    let framework = poise::Framework::builder()
+        .options(poise::FrameworkOptions {
+            commands: vec![chat(), summarize()],
+            ..Default::default()
+        })
+        .setup(|ctx, _ready, framework| {
+            Box::pin(async move {
+                poise::builtins::register_globally(ctx, &framework.options().commands).await?;
+                Ok(Data {})
+            })
+        })
+        .build();
 
-    let intents = GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
-
-    let mut client = Client::builder(token, intents)
-        .event_handler(Handler)
+    let client = serenity::ClientBuilder::new(token, intents)
         .framework(framework)
-        .await
-        .expect("Error creating client");
-
-    if let Err(why) = client.start().await {
-        println!("An error occurred while running the client: {:?}", why);
-    }
+        .await;
+    client.unwrap().start().await.unwrap();
 }
