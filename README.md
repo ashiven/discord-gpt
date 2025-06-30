@@ -10,7 +10,7 @@
 
 ## About
 
-This is a discord bot that was written with [poise](https://docs.rs/poise/latest/poise/index.html) to enable users to have simple conversations with **ChatGPT** without having to interact with the website.
+This is a discord bot that was written with [poise](https://github.com/serenity-rs/poise) to enable users to have simple conversations with **ChatGPT** without having to interact with the website.
 
 ## Getting Started
 
@@ -23,17 +23,18 @@ This is a discord bot that was written with [poise](https://docs.rs/poise/latest
 ### Setup
 
 1. Clone the repository to your local machine as follows:
+   
    ```bash
    git clone https://github.com/ashiven/discord-gpt.git
    ```
    
-2. Navigate to the **discord-gpt** directory.
+3. Navigate to the **discord-gpt** directory.
 
    ```bash
    cd ./discord-gpt
    ```
 
-3. Set the **Discord** bot token and **OpenAI** API key environment variables or add them to a `.env` file
+4. Set the **Discord** bot token and **OpenAI** API key environment variables or add them to a `.env` file
 
    ```bash
    export OPENAI_API_KEY="your api key" DISCORD_TOKEN="your discord token" 
@@ -46,6 +47,28 @@ This is a discord bot that was written with [poise](https://docs.rs/poise/latest
    ```bash
    cargo run --release
    ```
+
+### Interactions
+
+- `!chat` to have a regular conversation with the bot that maintains its context.
+
+   ```
+   User: !chat My favorite color is blue
+
+   Bot: That is very interesting!
+
+   User: !chat What is my favorite color?
+
+   Bot: Your favorite color is blue.
+   ```
+
+- `!summarize` to get a brief summary of your message or the message that you are responding to
+
+  ```
+  User: !summarize *Long and complicated text*
+
+  Bot: The key points of the text are the following: ...
+  ```
 
 ---
 
