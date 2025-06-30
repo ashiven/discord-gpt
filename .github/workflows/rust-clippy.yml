@@ -7,18 +7,16 @@
 # More details at https://github.com/rust-lang/rust-clippy
 # and https://rust-lang.github.io/rust-clippy/
 
-name: rust-clippy analyze
+name: Rust
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "main" ]
 
 jobs:
-  rust-clippy-analyze:
-    name: Run rust-clippy analyzing
+  lint:
     runs-on: ubuntu-latest
     permissions:
       contents: read
