@@ -1,5 +1,7 @@
 use dotenv::dotenv;
+use once_cell::sync::Lazy;
 use poise::serenity_prelude as serenity;
+use tokio::sync::Mutex;
 
 mod chat;
 mod handlers;
@@ -10,14 +12,13 @@ struct Data {}
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
 
-static mut CHAT_HANDLER: ChatHandler = ChatHandler {
-    conversations: None,
-};
-static mut SUMMARIZE_HANDLER: SummarizeHandler = SummarizeHandler {};
+static CHAT_HANDLER: Lazy<Mutex<ChatHandler>> = Lazy::new(|| Mutex::new(ChatHandler::new()));
+static SUMMARIZE_HANDLER: Lazy<Mutex<SummarizeHandler>> =
+    Lazy::new(|| Mutex::new(SummarizeHandler::new()));
 
 #[poise::command(slash_command, prefix_command)]
 async fn chat(ctx: Context<'_>, msg: serenity::Message) -> Result<(), Error> {
-    let response = unsafe { CHAT_HANDLER.handle(msg.clone()).await? };
+    let response = CHAT_HANDLER.lock().await.handle(msg.clone()).await?;
     msg.reply(ctx, response).await?;
 
     Ok(())
@@ -25,7 +26,7 @@ async fn chat(ctx: Context<'_>, msg: serenity::Message) -> Result<(), Error> {
 
 #[poise::command(slash_command, prefix_command)]
 async fn summarize(ctx: Context<'_>, msg: serenity::Message) -> Result<(), Error> {
-    let response = unsafe { SUMMARIZE_HANDLER.handle(msg.clone()).await? };
+    let response = SUMMARIZE_HANDLER.lock().await.handle(msg.clone()).await?;
     msg.reply(ctx, response).await?;
 
     Ok(())
@@ -35,11 +36,6 @@ async fn summarize(ctx: Context<'_>, msg: serenity::Message) -> Result<(), Error
 async fn main() {
     dotenv().ok();
     let discord_token = std::env::var("DISCORD_TOKEN").expect("missing discord token");
-
-    unsafe {
-        CHAT_HANDLER = ChatHandler::new();
-        SUMMARIZE_HANDLER = SummarizeHandler::new();
-    }
 
     let intents = serenity::GatewayIntents::non_privileged();
     let framework = poise::Framework::builder()
