@@ -62,7 +62,7 @@ This is a discord bot that was written with [poise](https://github.com/serenity-
    Bot: Your favorite color is blue.
    ```
 
--  `/summarize` to get a brief summary of your message or the message that you are responding to.
+-  `/summarize` to get a brief summary of your message.
 
    ```
    User: /summarize *Long and complicated text*
