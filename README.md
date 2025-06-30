@@ -10,7 +10,7 @@
 
 ## About
 
-This is a discord bot that was written with [Poise](https://github.com/serenity-rs/poise) to enable users to have simple conversations with **ChatGPT** without having to interact with the website.
+This is a **Discord** bot that was written with [Poise](https://github.com/serenity-rs/poise) to enable users to have simple conversations with **ChatGPT** without having to interact with the website.
 
 ## Getting Started
 
