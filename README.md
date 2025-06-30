@@ -10,7 +10,7 @@
 
 ## About
 
-This is a discord bot that was written with [poise](https://docs.rs/poise/latest/poise/index.html) to enable users to have simple conversations with **ChatGPT** without having to interact with the website.
+This is a discord bot that was written with [poise](https://github.com/serenity-rs/poise) to enable users to have simple conversations with **ChatGPT** without having to interact with the website.
 
 ## Getting Started
 
@@ -46,6 +46,28 @@ This is a discord bot that was written with [poise](https://docs.rs/poise/latest
 
    ```bash
    cargo run --release
+   ```
+
+### Interactions
+
+-  `!chat` to have a regular conversation with the bot that maintains its context.
+
+   ```
+   User: !chat My favorite color is blue
+
+   Bot: That is very interesting!
+
+   User: !chat What is my favorite color?
+
+   Bot: Your favorite color is blue.
+   ```
+
+-  `!summarize` to get a brief summary of your message or the message that you are responding to
+
+   ```
+   User: !summarize *Long and complicated text*
+
+   Bot: The key points of the text are the following: ...
    ```
 
 ---
