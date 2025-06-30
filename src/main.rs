@@ -17,17 +17,20 @@ static SUMMARIZE_HANDLER: Lazy<Mutex<SummarizeHandler>> =
     Lazy::new(|| Mutex::new(SummarizeHandler::new()));
 
 #[poise::command(slash_command, prefix_command)]
-async fn chat(ctx: Context<'_>, msg: serenity::Message) -> Result<(), Error> {
-    let response = CHAT_HANDLER.lock().await.handle(msg.clone()).await?;
-    msg.reply(ctx, response).await?;
+async fn chat(ctx: Context<'_>, msg: String) -> Result<(), Error> {
+    let message = &msg;
+    let author_id = ctx.author().id;
+    let response = CHAT_HANDLER.lock().await.handle(message, author_id).await?;
+    ctx.reply(response).await?;
 
     Ok(())
 }
 
 #[poise::command(slash_command, prefix_command)]
-async fn summarize(ctx: Context<'_>, msg: serenity::Message) -> Result<(), Error> {
-    let response = SUMMARIZE_HANDLER.lock().await.handle(msg.clone()).await?;
-    msg.reply(ctx, response).await?;
+async fn summarize(ctx: Context<'_>, msg: String) -> Result<(), Error> {
+    let message = &msg;
+    let response = SUMMARIZE_HANDLER.lock().await.handle(message).await?;
+    ctx.reply(response).await?;
 
     Ok(())
 }
