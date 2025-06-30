@@ -4,6 +4,21 @@ use poise::serenity_prelude as serenity;
 use std::collections::HashMap;
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
+pub enum CommandType {
+    Chat,
+    Summarize,
+}
+
+impl CommandType {
+    pub fn from_str(command: &str) -> Result<Self, Error> {
+        match command {
+            "chat" => Ok(CommandType::Chat),
+            "summarize" => Ok(CommandType::Summarize),
+            _ => Err("Unknown command".into()),
+        }
+    }
+}
+
 pub struct CommandHandler {
     pub conversations: Option<HashMap<serenity::UserId, Conversation>>,
 }
@@ -21,10 +36,11 @@ impl CommandHandler {
         message: &str,
         author_id: serenity::UserId,
     ) -> Result<String, Error> {
+        let command = CommandType::from_str(command)?;
+
         let response = match command {
-            "chat" => self.chat(message, author_id).await?,
-            "summarize" => self.summarize(message, author_id).await?,
-            _ => return Err("Unknown command".into()),
+            CommandType::Chat => self.chat(message, author_id).await?,
+            CommandType::Summarize => self.summarize(message, author_id).await?,
         };
 
         Ok(response)
