@@ -12,24 +12,34 @@ struct Data {}
 type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
 
-static CHAT_HANDLER: Lazy<Mutex<ChatHandler>> = Lazy::new(|| Mutex::new(ChatHandler::new()));
-static SUMMARIZE_HANDLER: Lazy<Mutex<SummarizeHandler>> =
-    Lazy::new(|| Mutex::new(SummarizeHandler::new()));
+static COMMAND_HANDLER: Lazy<Mutex<CommandHandler>> =
+    Lazy::new(|| Mutex::new(CommandHandler::new()));
 
 #[poise::command(slash_command, prefix_command)]
-async fn chat(ctx: Context<'_>, msg: String) -> Result<(), Error> {
-    let message = &msg;
+async fn chat(ctx: Context<'_>, message: String) -> Result<(), Error> {
+    let message = &message;
     let author_id = ctx.author().id;
-    let response = CHAT_HANDLER.lock().await.handle(message, author_id).await?;
+    let command = &ctx.command().name;
+    let response = COMMAND_HANDLER
+        .lock()
+        .await
+        .handle(command, message, author_id)
+        .await?;
     ctx.reply(response).await?;
 
     Ok(())
 }
 
 #[poise::command(slash_command, prefix_command)]
-async fn summarize(ctx: Context<'_>, msg: String) -> Result<(), Error> {
-    let message = &msg;
-    let response = SUMMARIZE_HANDLER.lock().await.handle(message).await?;
+async fn summarize(ctx: Context<'_>, message: String) -> Result<(), Error> {
+    let message = &message;
+    let author_id = ctx.author().id;
+    let command = &ctx.command().name;
+    let response = COMMAND_HANDLER
+        .lock()
+        .await
+        .handle(command, message, author_id)
+        .await?;
     ctx.reply(response).await?;
 
     Ok(())

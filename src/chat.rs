@@ -2,6 +2,7 @@ use chatgpt::prelude::*;
 use chatgpt::types::CompletionResponse;
 use chatgpt::Result as ChatResult;
 
+#[allow(dead_code)]
 pub async fn message_chatgpt(message: &str) -> ChatResult<String> {
     let api_key = std::env::var("OPENAI_API_KEY")?;
     let client = ChatGPT::new(api_key)?;
