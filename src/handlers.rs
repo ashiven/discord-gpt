@@ -126,9 +126,11 @@ impl CommandHandler {
             self._edit_reply(ctx, &reply_handle, runtime_text).await?;
             tokio::time::sleep(Duration::from_secs(1)).await;
         }
+        self._edit_reply(ctx, &reply_handle, "~Session Completed~".into())
+            .await?;
 
         let end_text = self._end_session(session_duration, author_id).await?;
-        self._edit_reply(ctx, &reply_handle, end_text).await?;
+        self._reply(ctx, end_text).await?;
         Ok(None)
     }
 
