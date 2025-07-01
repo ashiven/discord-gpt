@@ -47,7 +47,7 @@ pub async fn summarize(
 #[poise::command(prefix_command, on_error = "error_handler")]
 pub async fn session(
     ctx: Context<'_>,
-    #[description = "How long the session should last in minutes"] duration: u64,
+    #[description = "How long the session should last in minutes"] duration: Option<u64>,
 ) -> Result<(), Error> {
     let author_id = ctx.author().id;
     let response = COMMAND_HANDLER
