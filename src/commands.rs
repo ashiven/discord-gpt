@@ -20,7 +20,11 @@ pub async fn chat(
         .await
         .handle(Command::Chat { message, author_id })
         .await?;
-    ctx.reply(response).await?;
+    if let Some(response) = response {
+        ctx.reply(response).await?;
+    } else {
+        ctx.reply("No response available.").await?;
+    }
 
     Ok(())
 }
@@ -39,26 +43,35 @@ pub async fn summarize(
         .await
         .handle(Command::Summarize { message, author_id })
         .await?;
-    ctx.reply(response).await?;
+    if let Some(response) = response {
+        ctx.reply(response).await?;
+    } else {
+        ctx.reply("No summary available.").await?;
+    }
 
     Ok(())
 }
 
-#[poise::command(prefix_command, on_error = "error_handler")]
+#[poise::command(
+    prefix_command,
+    track_edits,
+    discard_spare_arguments,
+    on_error = "error_handler"
+)]
 pub async fn session(
     ctx: Context<'_>,
     #[description = "How long the session should last in minutes"] duration: Option<u64>,
 ) -> Result<(), Error> {
     let author_id = ctx.author().id;
-    let response = COMMAND_HANDLER
+    COMMAND_HANDLER
         .lock()
         .await
         .handle(Command::Session {
+            ctx,
             duration,
             author_id,
         })
         .await?;
-    ctx.reply(response).await?;
 
     Ok(())
 }
