@@ -22,7 +22,7 @@ async fn main() {
                 prefix: Some("~".into()),
                 ..Default::default()
             },
-            commands: vec![commands::chat(), commands::summarize()],
+            commands: vec![commands::chat(), commands::summarize(), commands::session()],
             ..Default::default()
         })
         .setup(|_ctx, _ready, _framework| Box::pin(async move { Ok(Data {}) }))

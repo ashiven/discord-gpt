@@ -4,19 +4,19 @@ use poise::serenity_prelude as serenity;
 use std::collections::HashMap;
 type Error = Box<dyn std::error::Error + Send + Sync>;
 
-pub enum CommandType {
-    Chat,
-    Summarize,
-}
-
-impl CommandType {
-    pub fn from_str(command: &str) -> Result<Self, Error> {
-        match command {
-            "chat" => Ok(CommandType::Chat),
-            "summarize" => Ok(CommandType::Summarize),
-            _ => Err("Unknown command".into()),
-        }
-    }
+pub enum Command<'a> {
+    Chat {
+        message: &'a str,
+        author_id: serenity::UserId,
+    },
+    Summarize {
+        message: &'a str,
+        author_id: serenity::UserId,
+    },
+    Session {
+        duration: u64,
+        author_id: serenity::UserId,
+    },
 }
 
 pub struct CommandHandler {
@@ -30,17 +30,14 @@ impl CommandHandler {
         }
     }
 
-    pub async fn handle(
-        &mut self,
-        command: &str,
-        message: &str,
-        author_id: serenity::UserId,
-    ) -> Result<String, Error> {
-        let command = CommandType::from_str(command)?;
-
+    pub async fn handle(&mut self, command: Command<'_>) -> Result<String, Error> {
         let response = match command {
-            CommandType::Chat => self.chat(message, author_id).await?,
-            CommandType::Summarize => self.summarize(message, author_id).await?,
+            Command::Chat { message, author_id } => self.chat(message, author_id).await?,
+            Command::Summarize { message, author_id } => self.summarize(message, author_id).await?,
+            Command::Session {
+                duration,
+                author_id,
+            } => self.session(duration, author_id).await?,
         };
 
         Ok(response)
@@ -70,6 +67,22 @@ impl CommandHandler {
 
         let conversation = self._get_conversation(author_id)?;
         let response = conversation.send_message(&summarize_message).await?;
+        let response = response.message().content.clone();
+
+        Ok(response)
+    }
+
+    pub async fn session(
+        &mut self,
+        duration: u64,
+        author_id: serenity::UserId,
+    ) -> Result<String, Error> {
+        let prompt = format!(
+            "You are starting a new session that will last for {duration} minutes. \
+            \n\nPlease confirm the start of the session."
+        );
+        let conversation = self._get_conversation(author_id)?;
+        let response = conversation.send_message(&prompt).await?;
         let response = response.message().content.clone();
 
         Ok(response)
