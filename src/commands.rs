@@ -1,10 +1,5 @@
 use crate::handlers::{Command, CommandHandler};
 use crate::{Context, Data, Error};
-use once_cell::sync::Lazy;
-use tokio::sync::Mutex;
-
-static COMMAND_HANDLER: Lazy<Mutex<CommandHandler>> =
-    Lazy::new(|| Mutex::new(CommandHandler::new()));
 
 #[poise::command(prefix_command, on_error = "error_handler")]
 pub async fn chat(
@@ -15,16 +10,14 @@ pub async fn chat(
 ) -> Result<(), Error> {
     let message = &message;
     let author_id = ctx.author().id;
-    let response = COMMAND_HANDLER
-        .lock()
-        .await
-        .handle(Command::Chat { message, author_id })
+    let mut command_handler = CommandHandler::new();
+    command_handler
+        .handle(Command::Chat {
+            ctx,
+            message,
+            author_id,
+        })
         .await?;
-    if let Some(response) = response {
-        ctx.reply(response).await?;
-    } else {
-        ctx.reply("No response available.").await?;
-    }
 
     Ok(())
 }
@@ -38,16 +31,14 @@ pub async fn summarize(
 ) -> Result<(), Error> {
     let message = &message;
     let author_id = ctx.author().id;
-    let response = COMMAND_HANDLER
-        .lock()
-        .await
-        .handle(Command::Summarize { message, author_id })
+    let mut command_handler = CommandHandler::new();
+    command_handler
+        .handle(Command::Summarize {
+            ctx,
+            message,
+            author_id,
+        })
         .await?;
-    if let Some(response) = response {
-        ctx.reply(response).await?;
-    } else {
-        ctx.reply("No summary available.").await?;
-    }
 
     Ok(())
 }
@@ -63,9 +54,8 @@ pub async fn session(
     #[description = "How long the session should last in minutes"] duration: Option<u64>,
 ) -> Result<(), Error> {
     let author_id = ctx.author().id;
-    COMMAND_HANDLER
-        .lock()
-        .await
+    let mut command_handler = CommandHandler::new();
+    command_handler
         .handle(Command::Session {
             ctx,
             duration,
