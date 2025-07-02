@@ -42,7 +42,6 @@ jobs:
       run: |
         shasum -a 256 discord_gpt-gnu-linux-x86_64.tar.gz > discord_gpt-gnu-linux-x86_64.tar.gz.sha256
         shasum -a 256 discord_gpt-windows.zip > discord_gpt-windows.zip.sha256
-        ls
 
     - name: Upload release binaries
       uses: alexellis/upload-assets@0.4.0
