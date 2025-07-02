@@ -19,8 +19,8 @@ jobs:
     - name: Checkout the repository
       uses: actions/checkout@v2
 
-    - name: Install OpenSSL library
-      run: sudo apt install -y libssl-dev
+    - name: Install Dependencies
+      run: sudo apt install -y pkg-config libssl-dev libudev-dev
 
     - name: Install Linux and Windows Cross Compilers
       run: sudo apt-get install --yes --no-install-recommends musl-tools gcc-mingw-w64-x86-64-win32
