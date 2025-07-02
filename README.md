@@ -10,7 +10,7 @@
 
 ## About
 
-This is a **Discord** bot that was written with [Poise](https://github.com/serenity-rs/poise) to enable users to have simple conversations with **ChatGPT** without having to interact with the website.
+This is a **Discord** bot that was written with [Poise](https://github.com/serenity-rs/poise) to enable users to have simple interactions with **ChatGPT** without having to use the website.
 
 ## Getting Started
 
@@ -69,6 +69,18 @@ This is a **Discord** bot that was written with [Poise](https://github.com/seren
 
    Bot: The key points of the text are the following: ...
    ```
+- `~session 10` to start a 10 minute pomodoro working session.
+
+  ```
+  User: ~session 10
+
+  Bot: Your 10 minute session has been running for: 
+
+       0m : 39s
+
+  Bot: 🍅⏰ Your mini pomodoro sprint has ended! 🎉 Time to take a well-deserved break and recharge for the next round.
+       Enjoy your breather! 😊 #PomodoroPower
+  ```
 
 ---
 
