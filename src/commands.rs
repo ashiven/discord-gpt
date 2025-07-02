@@ -53,6 +53,9 @@ pub async fn summarize(
 pub async fn session(
     ctx: Context<'_>,
     #[description = "How long the session should last in minutes"] duration: Option<u64>,
+    #[description = "Goals for the session, e.g. \"Write a blog post\""]
+    #[rest]
+    goals: Option<String>,
 ) -> Result<(), Error> {
     let author_id = ctx.author().id;
     let mut command_handler = CommandHandler::new();
@@ -60,6 +63,7 @@ pub async fn session(
         .handle(Command::Session {
             ctx,
             duration,
+            goals,
             author_id,
         })
         .await?;

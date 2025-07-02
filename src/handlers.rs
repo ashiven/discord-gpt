@@ -28,6 +28,7 @@ pub enum Command<'a> {
     Session {
         ctx: Context<'a>,
         duration: Option<u64>,
+        goals: Option<String>,
         author_id: serenity::UserId,
     },
 }
@@ -64,8 +65,9 @@ impl CommandHandler {
             Command::Session {
                 ctx,
                 duration,
+                goals,
                 author_id,
-            } => self.session(ctx, duration, author_id).await?,
+            } => self.session(ctx, duration, goals, author_id).await?,
         };
 
         Ok(())
@@ -135,6 +137,7 @@ impl CommandHandler {
         ctx: Context<'_>,
         reply_handle: &poise::ReplyHandle<'_>,
         session_duration: u64,
+        goals: Option<String>,
         author_id: serenity::UserId,
     ) -> Result<(), Error> {
         COMMAND_HANDLER_STATE
@@ -146,12 +149,17 @@ impl CommandHandler {
         self._edit_reply(ctx, reply_handle, "~Session Completed~".into())
             .await?;
 
-        let end_session_prompt = format!(
+        let mut end_session_prompt = format!(
         "I have just completed a pomodoro session that lasted \
         for {session_duration} minutes. Please inform me in a creative way that my session has ended \
-        and that I can take a break now. You may use emojis in your response or send a link \
-        to a funny animal video or whatever you like.\n"
+        and that I can take a break now. You may use emojis in your response and include a link \
+        to a funny or cute animal video / gif / image or whatever you like.\n"
     );
+        if let Some(goals) = goals {
+            let goal_assistance_prompt = format!("I had the following goals for this session: '{goals}'. \
+            Please ask me whether I achieved them or not and if not, whether I would like some assistance to achieve them in the next session.\n");
+            end_session_prompt = format!("{end_session_prompt}\n\n{goal_assistance_prompt}");
+        }
         let response = self._message_gpt(author_id, &end_session_prompt).await?;
         self._reply(ctx, response).await?;
 
@@ -162,6 +170,7 @@ impl CommandHandler {
         &mut self,
         ctx: Context<'_>,
         duration: Option<u64>,
+        goals: Option<String>,
         author_id: serenity::UserId,
     ) -> Result<(), Error> {
         let session = self._create_session(duration, author_id).await;
@@ -178,7 +187,8 @@ impl CommandHandler {
         let reply_handle = self._reply(ctx, start_text).await?;
 
         let mut runtime_seconds_total = 0;
-        while Duration::from_secs(runtime_seconds_total) < session.duration {
+        while runtime_seconds_total < session.duration.as_secs() {
+            // TODO: Add a check for whether the session has been cancelled
             let runtime_minutes = runtime_seconds_total / 60;
             let runtime_seconds = runtime_seconds_total % 60;
             let runtime_text = format!(
@@ -189,8 +199,14 @@ impl CommandHandler {
             runtime_seconds_total += 1;
         }
 
-        self._end_session(ctx, &reply_handle, session_duration_minutes, author_id)
-            .await?;
+        self._end_session(
+            ctx,
+            &reply_handle,
+            session_duration_minutes,
+            goals,
+            author_id,
+        )
+        .await?;
         Ok(())
     }
 
