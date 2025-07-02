@@ -78,7 +78,7 @@ This is a **Discord** bot that was written with [Poise](https://github.com/seren
 
        0m : 39s
 
-  Bot: 🍅🎉 Time's up! Your 1-minute pomodoro session has come to an end. It's break time! 🌟
+  Bot: 🍅🎉 Time's up! Your 10-minute pomodoro session has come to an end. It's break time! 🌟
 
        Did you manage to build the HTTP server in Python during this short session?
        If not, would you like some help to achieve it in the next one?
