@@ -132,20 +132,30 @@ impl CommandHandler {
 
     async fn _end_session(
         &mut self,
+        ctx: Context<'_>,
+        reply_handle: &poise::ReplyHandle<'_>,
         session_duration: u64,
         author_id: serenity::UserId,
-    ) -> Result<String, Error> {
+    ) -> Result<(), Error> {
         COMMAND_HANDLER_STATE
             .lock()
             .await
             .sessions
             .remove(&author_id);
-        let end_session_prompt = format!("I have just completed a pomodoro session that lasted \
-            for {session_duration} minutes. Please inform me in a creative way that my session has ended \
-            and that I can take a break now. You may use emojis in your response.\n");
-        let response = self._message_gpt(author_id, &end_session_prompt).await?;
 
-        Ok(response)
+        self._edit_reply(ctx, reply_handle, "~Session Completed~".into())
+            .await?;
+
+        let end_session_prompt = format!(
+        "I have just completed a pomodoro session that lasted \
+        for {session_duration} minutes. Please inform me in a creative way that my session has ended \
+        and that I can take a break now. You may use emojis in your response or send a link \
+        to a funny animal video or whatever you like.\n"
+    );
+        let response = self._message_gpt(author_id, &end_session_prompt).await?;
+        self._reply(ctx, response).await?;
+
+        Ok(())
     }
 
     async fn session(
@@ -156,31 +166,31 @@ impl CommandHandler {
     ) -> Result<(), Error> {
         let session = self._create_session(duration, author_id).await;
         if session.is_none() {
-            self._reply(ctx, "You already have an active session".into())
-                .await?;
+            let session_active_text = "You already have an active session.".into();
+            self._reply(ctx, session_active_text).await?;
             return Ok(());
         }
+
         let session = session.unwrap();
-        let session_duration = session.duration.as_secs() / 60;
-        let start_text = format!("Starting your {session_duration} minute pomodoro session...\n");
+        let session_duration_minutes = session.duration.as_secs() / 60;
+        let start_text =
+            format!("Starting your {session_duration_minutes} minute pomodoro session...\n");
         let reply_handle = self._reply(ctx, start_text).await?;
 
-        let mut runtime_total = 0;
-        while Duration::from_secs(runtime_total) < session.duration {
-            let runtime_minutes = runtime_total / 60;
-            let runtime_seconds = runtime_total % 60;
+        let mut runtime_seconds_total = 0;
+        while Duration::from_secs(runtime_seconds_total) < session.duration {
+            let runtime_minutes = runtime_seconds_total / 60;
+            let runtime_seconds = runtime_seconds_total % 60;
             let runtime_text = format!(
-                "Your {session_duration} minute session has been running for: \n\n {runtime_minutes}m : {runtime_seconds}s"
+                "Your {session_duration_minutes} minute session has been running for: \n\n {runtime_minutes}m : {runtime_seconds}s"
             );
             self._edit_reply(ctx, &reply_handle, runtime_text).await?;
             tokio::time::sleep(Duration::from_secs(1)).await;
-            runtime_total += 1;
+            runtime_seconds_total += 1;
         }
-        self._edit_reply(ctx, &reply_handle, "~Session Completed~".into())
-            .await?;
 
-        let end_text = self._end_session(session_duration, author_id).await?;
-        self._reply(ctx, end_text).await?;
+        self._end_session(ctx, &reply_handle, session_duration_minutes, author_id)
+            .await?;
         Ok(())
     }
 

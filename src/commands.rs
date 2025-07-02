@@ -1,7 +1,7 @@
 use crate::handlers::{Command, CommandHandler};
 use crate::{Context, Data, Error};
 
-#[poise::command(prefix_command, on_error = "error_handler")]
+#[poise::command(prefix_command, aliases("c"), on_error = "error_handler")]
 pub async fn chat(
     ctx: Context<'_>,
     #[description = "The message sent by the user"]
@@ -22,7 +22,7 @@ pub async fn chat(
     Ok(())
 }
 
-#[poise::command(prefix_command, on_error = "error_handler")]
+#[poise::command(prefix_command, aliases("s"), on_error = "error_handler")]
 pub async fn summarize(
     ctx: Context<'_>,
     #[description = "The message sent by the user"]
@@ -47,6 +47,7 @@ pub async fn summarize(
     prefix_command,
     track_edits,
     discard_spare_arguments,
+    aliases("p"),
     on_error = "error_handler"
 )]
 pub async fn session(
