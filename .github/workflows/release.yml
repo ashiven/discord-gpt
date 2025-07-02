@@ -40,8 +40,8 @@ jobs:
 
     - name: Generate SHA256 checksums
       run: |
-        shasum -a 256 textpod-gnu-linux-x86_64.tar.gz > textpod-gnu-linux-x86_64.tar.gz.sha256
-        shasum -a 256 textpod-windows.zip > textpod-windows.zip.sha256
+        shasum -a 256 discord_gpt-gnu-linux-x86_64.tar.gz > discord_gpt-gnu-linux-x86_64.tar.gz.sha256
+        shasum -a 256 discord_gpt-windows.zip > discord_gpt-windows.zip.sha256
 
     - name: Upload release binaries
       uses: alexellis/upload-assets@0.4.0
