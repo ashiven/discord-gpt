@@ -71,7 +71,7 @@ impl CommandHandler {
         Ok(())
     }
 
-    pub async fn chat(
+    async fn chat(
         &mut self,
         ctx: Context<'_>,
         message: &str,
@@ -83,7 +83,7 @@ impl CommandHandler {
         Ok(())
     }
 
-    pub async fn summarize(
+    async fn summarize(
         &mut self,
         ctx: Context<'_>,
         message: &str,
@@ -97,6 +97,37 @@ impl CommandHandler {
         self._reply(ctx, response).await?;
 
         Ok(())
+    }
+
+    /// If the user provided a duration, we want to create
+    /// a new pomodoro session with that duration and return it.
+    /// If the user did not provide a duration, we want to
+    /// create a default session of 60 minutes.
+    /// For already existing sessions, return None
+    async fn _create_session(
+        &mut self,
+        duration: Option<u64>,
+        author_id: serenity::UserId,
+    ) -> Option<Session> {
+        let session_exists = COMMAND_HANDLER_STATE
+            .lock()
+            .await
+            .sessions
+            .contains_key(&author_id);
+        if session_exists {
+            return None;
+        }
+
+        let new_session = Session {
+            duration: Duration::from_secs(duration.unwrap_or(60) * 60),
+        };
+        COMMAND_HANDLER_STATE
+            .lock()
+            .await
+            .sessions
+            .insert(author_id, new_session);
+
+        Some(new_session)
     }
 
     async fn _end_session(
@@ -117,7 +148,7 @@ impl CommandHandler {
         Ok(response)
     }
 
-    pub async fn session(
+    async fn session(
         &mut self,
         ctx: Context<'_>,
         duration: Option<u64>,
@@ -180,37 +211,6 @@ impl CommandHandler {
             .await?;
 
         Ok(())
-    }
-
-    /// If the user provided a duration, we want to create
-    /// a new pomodoro session with that duration and return it.
-    /// If the user did not provide a duration, we want to
-    /// create a default session of 60 minutes.
-    /// For already existing sessions, return None
-    async fn _create_session(
-        &mut self,
-        duration: Option<u64>,
-        author_id: serenity::UserId,
-    ) -> Option<Session> {
-        let session_exists = COMMAND_HANDLER_STATE
-            .lock()
-            .await
-            .sessions
-            .contains_key(&author_id);
-        if session_exists {
-            return None;
-        }
-
-        let new_session = Session {
-            duration: Duration::from_secs(duration.unwrap_or(60) * 60),
-        };
-        COMMAND_HANDLER_STATE
-            .lock()
-            .await
-            .sessions
-            .insert(author_id, new_session);
-
-        Some(new_session)
     }
 
     async fn _message_gpt(
