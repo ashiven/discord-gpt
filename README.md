@@ -53,7 +53,7 @@ This is a **Discord** bot that was written with [Poise](https://github.com/seren
 -  `~chat` to have a regular conversation with the bot that maintains its context.
 
    ```
-   User: ~chat My favorite color is blue
+   User: ~chat My favorite color is blue.
 
    Bot: That is very interesting!
 
@@ -69,17 +69,21 @@ This is a **Discord** bot that was written with [Poise](https://github.com/seren
 
    Bot: The key points of the text are the following: ...
    ```
-- `~session 10` to start a 10 minute pomodoro working session.
+- `~session 10 [goals]` to start a 10 minute pomodoro working session, optionally telling **ChatGPT** about your goals for this session. 
 
   ```
-  User: ~session 10
+  User: ~session 10 I would like to use this fruitful time in order to build an http server in python.
 
   Bot: Your 10 minute session has been running for: 
 
        0m : 39s
 
-  Bot: 🍅⏰ Your mini pomodoro sprint has ended! 🎉 Time to take a well-deserved break and recharge for the next round.
-       Enjoy your breather! 😊 #PomodoroPower
+  Bot: 🍅🎉 Time's up! Your 1-minute pomodoro session has come to an end. It's break time! 🌟
+
+       Did you manage to build the HTTP server in Python during this short session?
+       If not, would you like some help to achieve it in the next one?
+
+       Here's a cute animal video to brighten your break: Funny Animal Video
   ```
 
 ---
