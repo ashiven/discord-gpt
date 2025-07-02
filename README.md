@@ -72,7 +72,7 @@ This is a **Discord** bot that was written with [Poise](https://github.com/seren
 - `~session 10 [goals]` to start a 10 minute pomodoro working session, optionally telling **ChatGPT** about your goals for this session. 
 
   ```
-  User: ~session 10 I would like to use this fruitful time in order to build an http server in python.
+  User: ~session 10 Learn how to build an http server in python.
 
   Bot: Your 10 minute session has been running for: 
 
